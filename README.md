@@ -1,11 +1,5 @@
 # 📚 Índice del Proyecto - Sistema Financiero Distribuido
 
-## 🎯 Quick Links
-- ⚡ [Inicio Rápido](#guía-de-inicio-rápido)
-- 🏗️ [Arquitectura](#arquitectura-del-sistema)
-- 🌐 [Red y Comunicación](#topología-de-red)
-- 📋 [Scripts de Inicialización (scripts/)](#scripts-de-inicialización)
-
 ---
 
 ## 🚀 Guía de Inicio Rápido
@@ -92,7 +86,7 @@ Pre-configura RabbitMQ con:
 ## 📁 Estructura del Proyecto
 
 ```
-Devsu-java-prueba/
+devsu-test/
 │
 ├── scripts/                      # 🔧 Scripts de Inicialización
 │   ├── init-db.sql              # Inicialización PostgreSQL
@@ -292,11 +286,11 @@ Contraseña: guest
 
 Al añadir nuevas características:
 
-1. ✅ Actualiza [architecture.md](.engram/architecture.md)
-2. ✅ Sigue Clean Architecture
-3. ✅ Escribe tests (80%+ cobertura)
-4. ✅ Documenta cambios en `.engram/decisiones/`
-5. ✅ Usa commit messages descriptivos
+1. ✅ Sigue Clean Architecture (Hexagonal)
+2. ✅ Escribe tests (80%+ cobertura)
+3. ✅ Mantén el código limpio y documentado
+4. ✅ Usa commit messages descriptivos
+5. ✅ Respeta las reglas de negocio (BigDecimal para dinero, validaciones, etc.)
 
 ---
 
