@@ -1,0 +1,157 @@
+# ============================================================================
+# Docker Compose - Entorno de Desarrollo Local
+# Sistema Financiero Distribuido con Microservicios
+# ============================================================================
+#
+# Este archivo orquesta los servicios principales para desarrollo:
+# - PostgreSQL: Base de datos relacional
+# - RabbitMQ: Message Broker para comunicación asincrónica
+#
+# CÓMO LEVANTAR EL ENTORNO:
+# 1. Colócate en el directorio raíz del proyecto
+# 2. Ejecuta: docker-compose up -d
+# 3. Verifica el estado: docker-compose ps
+#
+# CÓMO DETENER EL ENTORNO:
+# - docker-compose down (detiene y elimina contenedores)
+# - docker-compose down -v (también elimina volúmenes - cuidado con datos)
+#
+# CÓMO VER LOS LOGS:
+# - docker-compose logs -f (todos los servicios)
+# - docker-compose logs -f postgres (solo PostgreSQL)
+# - docker-compose logs -f rabbitmq (solo RabbitMQ)
+#
+# ============================================================================
+
+version: '3.9'
+
+services:
+  # ========================================================================
+  # PostgreSQL - Base de Datos Relacional
+  # ========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: ms-postgres
+    hostname: postgres
+    environment:
+      # Credenciales de administrador
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ms_main
+      # Configuración de locale
+      POSTGRES_INITDB_ARGS: "-c client_encoding=UTF8"
+    ports:
+      # Puerto externo : Puerto interno (Por defecto PostgreSQL usa 5432)
+      - "5433:5432"
+    volumes:
+      # Persistencia de datos en volumen nombrado
+      - postgres_data:/var/lib/postgresql/data
+      # Script de inicialización para crear esquemas/bases de datos
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Política de reinicio automático si hay error
+    restart: unless-stopped
+
+  # ========================================================================
+  # RabbitMQ - Message Broker
+  # ========================================================================
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: ms-rabbitmq
+    hostname: rabbitmq
+    environment:
+      # Credenciales de usuario por defecto
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      # Configuración de máquina erlang
+      RABBITMQ_DEFAULT_VHOST: /
+    ports:
+      # Puerto AMQP (protocolo de mensajería)
+      - "5672:5672"
+      # Puerto Management UI (interfaz web)
+      - "15672:15672"
+    volumes:
+      # Persistencia de datos de RabbitMQ
+      - rabbitmq_data:/var/lib/rabbitmq
+      # Definiciones de exchanges, queues, bindings (opcional)
+      - ./scripts/rabbitmq-definitions.json:/etc/rabbitmq/definitions.json:ro
+    networks:
+      - backend-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Política de reinicio automático si hay error
+    restart: unless-stopped
+
+# ============================================================================
+# VOLÚMENES NOMBRADOS
+# Almacenamiento persistente para los contenedores
+# ============================================================================
+volumes:
+  postgres_data:
+    driver: local
+  rabbitmq_data:
+    driver: local
+
+# ============================================================================
+# RED PERSONALIZADA
+# Permite comunicación entre contenedores por nombre de servicio
+# ============================================================================
+networks:
+  backend-network:
+    driver: bridge
+
+# ============================================================================
+# ACCESO A LOS SERVICIOS DESDE TU MÁQUINA LOCAL
+# ============================================================================
+# PostgreSQL (Docker):
+#   - Host: localhost
+#   - Puerto: 5433
+#   - Usuario: postgres
+#   - Contraseña: postgres
+#   - Base de datos inicial: ms_main
+#   - Conexión: jdbc:postgresql://localhost:5433/db_clientes
+#
+# PostgreSQL (Existente):
+#   - Host: localhost
+#   - Puerto: 5432
+#   - Usuario: postgres
+#   - Contraseña: postgres
+#
+# RabbitMQ Management UI:
+#   - URL: http://localhost:15672
+#   - Usuario: guest
+#   - Contraseña: guest
+#
+# RabbitMQ AMQP (para publicadores/consumidores):
+#   - Host: localhost
+#   - Puerto: 5672
+#   - Usuario: guest
+#   - Contraseña: guest
+#
+# ============================================================================
+# DESDE LOS MICROSERVICIOS (DENTRO DE DOCKER)
+# ============================================================================
+# PostgreSQL (Docker):
+#   - Host: postgres (nombre del servicio)
+#   - Puerto: 5432
+#   - Conexión: jdbc:postgresql://postgres:5432/db_clientes
+#
+# PostgreSQL (Existente, usar desde Docker):
+#   - Host: host.docker.internal (acceso al host desde Docker)
+#   - Puerto: 5432
+#   - Conexión: jdbc:postgresql://host.docker.internal:5432/db_clientes
+#
+# RabbitMQ:
+#   - Host: rabbitmq (nombre del servicio)
+#   - Puerto: 5672 (AMQP)
+#   - URL: amqp://guest:guest@rabbitmq:5672/
+# ============================================================================

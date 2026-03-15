@@ -1,0 +1,89 @@
+{
+  "version": "2",
+  "vhost_limits": [],
+  "queues": [
+    {
+      "name": "cliente.eventos.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    },
+    {
+      "name": "cuenta.eventos.queue",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": {
+        "x-queue-type": "classic"
+      }
+    }
+  ],
+  "exchanges": [
+    {
+      "name": "cliente.events",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+    {
+      "name": "cuenta.events",
+      "vhost": "/",
+      "type": "topic",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    }
+  ],
+  "bindings": [
+    {
+      "source": "cliente.events",
+      "vhost": "/",
+      "destination": "cliente.eventos.queue",
+      "destination_type": "queue",
+      "routing_key": "cliente.*",
+      "arguments": {}
+    },
+    {
+      "source": "cuenta.events",
+      "vhost": "/",
+      "destination": "cuenta.eventos.queue",
+      "destination_type": "queue",
+      "routing_key": "cuenta.*",
+      "arguments": {}
+    }
+  ],
+  "users": [
+    {
+      "name": "guest",
+      "password_hash": "SHhk2rK+9pAaLzfbASPPLW1sYmOKyTfPOp7x8c4a7I2GLqKF",
+      "hashing_algorithm": "rabbit_password_hashing_sha256",
+      "tags": "administrator"
+    }
+  ],
+  "permissions": [
+    {
+      "user": "guest",
+      "vhost": "/",
+      "configure": ".*",
+      "write": ".*",
+      "read": ".*"
+    }
+  ],
+  "topic_permissions": [],
+  "policies": [],
+  "operator_policies": [],
+  "parameters": [],
+  "global_parameters": [
+    {
+      "name": "cluster_partition_handling",
+      "value": "autoheal"
+    }
+  ]
+}

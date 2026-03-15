@@ -1,16 +1,12 @@
-# Compiled class file
+# ============================================================================
+# Git Ignore - Sistema Financiero Distribuido (Microservicios Java Spring Boot)
+# Arquitectura Hexagonal con Clean Architecture
+# ============================================================================
+
+# ============================================================================
+# JAVA / SPRING BOOT - Archivos compilados y empaquetados
+# ============================================================================
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -18,7 +14,322 @@
 *.zip
 *.tar.gz
 *.rar
+*.exe
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# ============================================================================
+# MAVEN (Gestor de Dependencias Principal)
+# ============================================================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.flattened-pom.xml
+mvnw
+mvnw.cmd
+.mvn/wrapper/
+
+# ============================================================================
+# GRADLE (Alternativa)
+# ============================================================================
+.gradle/
+build/
+gradle-app.setting
+.gradletasknamecache
+gradlew
+gradlew.bat
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+# ============================================================================
+# IDE - IntelliJ IDEA / WebStorm / CLion
+# ============================================================================
+.idea/
+.idea_modules/
+*.iml
+*.iws
+*.ipr
+*.class
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+local.properties
+.sts4-cache/
+.eclipse-compiler
+.eclipse-cache
+
+# ============================================================================
+# IDE - Visual Studio Code
+# ============================================================================
+.vscode/
+.vscode-test/
+*.code-workspace
+.history/
+
+# ============================================================================
+# IDE - Eclipse
+# ============================================================================
+.metadata/
+.plugins/
+.project
+.pydevproject
+bin/
+.classpath
+.c9/
+*.launch
+
+# ============================================================================
+# IDE - NetBeans
+# ============================================================================
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+.nb-gradle-properties
+
+# ============================================================================
+# STS (Spring Tool Suite)
+# ============================================================================
+.sts4-cache/
+.springBeans
+
+# ============================================================================
+# ARCHIVOS DE SISTEMA OPERATIVO
+# ============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+*~
+desktop.ini
+.nfs*
+
+# ============================================================================
+# VARIABLES DE ENTORNO Y SECRETOS (CRITICAL)
+# ============================================================================
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+application-local.properties
+application-development.properties
+application-test.properties
+application-prod.properties
+application-production.properties
+application-*.properties
+!application-example.properties
+
+# ============================================================================
+# CERTIFICADOS Y SECRETOS
+# ============================================================================
+*.jks
+*.p12
+*.pem
+*.key
+*.crt
+*.pfx
+*.keystore
+secrets/
+.secrets/
+
+# ============================================================================
+# DOCKER Y DOCKER COMPOSE
+# ============================================================================
+docker-compose.override.yml
+.dockerignore
+.docker/
+docker-compose.local.yml
+docker-compose.dev.yml
+
+# ============================================================================
+# BASE DE DATOS - Persistencia Local
+# ============================================================================
+*.db
+*.sqlite
+*.sqlite3
+*.h2.db
+postgres_data/
+mysql_data/
+mongodb_data/
+data/
+*.db-journal
+
+# ============================================================================
+# RABBITMQ Y MESSAGE BROKERS
+# ============================================================================
+rabbitmq_data/
+.rabbitmq/
+*_broker_data/
+
+# ============================================================================
+# REGISTROS Y LOGS
+# ============================================================================
+logs/
+log/
+logs/*
+*.log
+*.logs
+nohup.out
+out/
+*.stack
+crash.dump
+
+# ============================================================================
+# NODE MODULES (Si se usa Node en scripts o frontend)
+# ============================================================================
+node_modules/
+npm-debug.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+dist/
+coverage/
+
+# ============================================================================
+# PYTHON (Scripts auxiliares)
+# ============================================================================
+__pycache__/
+*.py[cod]
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# ============================================================================
+# COBERTURA DE PRUEBAS Y REPORTES
+# ============================================================================
+/coverage
+.coverage
+coverage.xml
+jacoco.xml
+.sonarqube/
+.sonar/
+sonarqube-report/
+
+# ============================================================================
+# ARCHIVOS TEMPORALES Y BACKUPS
+# ============================================================================
+*.tmp
+*.temp
+*.backup
+*.bak
+.~*
+*#
+*~
+*.swn
+.cache/
+.tmp/
+tmp/
+temp/
+
+# ============================================================================
+# ARCHIVOS COMPILADOS DE GROOVY
+# ============================================================================
+*.groovy.class
+
+# ============================================================================
+# H2 Database Console (Development)
+# ============================================================================
+h2-console-log.html
+h2-console-log.sql
+
+# ============================================================================
+# ACTUATOR ENDPOINTS Y DEVELOPMENT TOOLS
+# ============================================================================
+devtools.properties
+.m2repository/
+.m2/
+
+# ============================================================================
+# MICROSERVICIOS - Cachés específicas
+# ============================================================================
+.cache/
+.m2/
+.gradle/
+
+# ============================================================================
+# ARCHIVOS ESPECÍFICOS DEL PROYECTO
+# ============================================================================
+*.iml
+.idea/
+*.class
+.DS_Store
+
+# ============================================================================
+# DOCUMENTACIÓN INTERNA - No necesaria en el repositorio remoto
+# ============================================================================
+.engram/
+.engram
+.docs-internal/
+*.drawio~
+*.bak
+*.swp
+temp/
+tmp/
+
+# ============================================================================
+# Configuración Local de Desarrollador
+# ============================================================================
+.classpath
+.project
+.settings/
+*.properties.local
+application-local.yml
+application-local.properties
+
+# ============================================================================
+# Archivos de Testing
+# ============================================================================
+.junit.xml
+coverage/
+htmlcov/
+test-results/
+
+# ============================================================================
+# Secretos y Credenciales (CRITICAL)
+# ============================================================================
+secrets/
+keys/
+*.pem
+*.key
+*.crt
+*.p12
+*.pkcs12
+
+# ============================================================================
+# Archivos de Sistema
+# ============================================================================
+.atom/
+.c9/
+.cache/
+.parcel-cache
+.pyre/
+.pytype/
+
+# ============================================================================
+# IDE Específicos
+# ============================================================================
+!.gitkeep
+.vscode/settings.json
+.vscode/launch.json
+
+# ============================================================================
+# Archivos de Configuración Específicos por Entorno
+# ============================================================================
+!.env.example
+!.env.*.example
