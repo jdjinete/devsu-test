@@ -1,0 +1,9 @@
+{
+    "nombre": "Juan Perez",
+    "genero": "M",
+    "edad": 30,
+    "identificacion": "1234567890",
+    "direccion": "Calle 123",
+    "telefono": "0987654321",
+    "contrasena": "12345678"
+}

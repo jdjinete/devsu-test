@@ -182,7 +182,7 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
                 .orElseThrow(() -> new ClienteNoEncontradoException(clienteId));
 
         // Actualizar campos si se proporcionan
-        cliente.actualizar(nombre, edad, direccion, telefono);
+        cliente.actualizar(nombre, cliente.getGenero(), edad, direccion, telefono);
 
         // Persistir cambios
         clienteRepositoryPort.actualizar(cliente);

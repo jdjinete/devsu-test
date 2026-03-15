@@ -40,7 +40,7 @@ public class Persona {
      * Constructor sin argumentos (para JPA/Persistencia)
      * Solo accesible internamente al dominio y a la infraestructura.
      */
-    protected Persona() {
+    public Persona() {
     }
 
     /**
@@ -53,7 +53,7 @@ public class Persona {
      * @param direccion      Dirección
      * @param telefono       Teléfono
      */
-    protected Persona(String nombre, String genero, Integer edad,
+    public Persona(String nombre, String genero, Integer edad,
                       String identificacion, String direccion, String telefono) {
         validarDatos(nombre, genero, edad, identificacion, direccion, telefono);
         this.nombre = nombre;
@@ -242,6 +242,15 @@ public class Persona {
     public Long getFechaRegistro() {
         return fechaRegistro;
     }
+    public void setPersonaId(Long personaId) { this.personaId = personaId; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setGenero(String genero) { this.genero = genero; }
+    public void setEdad(Integer edad) { this.edad = edad; }
+    public void setIdentificacion(String identificacion) { this.identificacion = identificacion; }
+    public void setDireccion(String direccion) { this.direccion = direccion; }
+    public void setTelefono(String telefono) { this.telefono = telefono; }
+    public void setEstado(String estado) { this.estado = estado; }
+    public void setFechaRegistro(Long fechaRegistro) { this.fechaRegistro = fechaRegistro; }
 
     // =====================================================================
     // Métodos equals y hashCode (Basados en Identificación)

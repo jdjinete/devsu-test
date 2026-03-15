@@ -32,7 +32,7 @@ public class Cliente extends Persona {
      * Constructor sin argumentos (para JPA/Persistencia)
      * Solo accesible internamente al dominio y a la infraestructura.
      */
-    protected Cliente() {
+    public Cliente() {
         super();
     }
 
@@ -47,7 +47,7 @@ public class Cliente extends Persona {
      * @param telefono       Teléfono
      * @param contrasena     Contraseña del cliente (será cifrada en infraestructura)
      */
-    protected Cliente(String nombre, String genero, Integer edad,
+    public Cliente(String nombre, String genero, Integer edad,
                       String identificacion, String direccion, String telefono,
                       String contrasena) {
         super(nombre, genero, edad, identificacion, direccion, telefono);
