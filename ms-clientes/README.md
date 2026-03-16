@@ -37,7 +37,7 @@ Este microservicio es responsable de la gestión de información de personas y c
 
 ### 1. Requisitos Previos
 - Docker y Docker Compose (para BD y RabbitMQ).
-- Java 21 (JDK).
+- Java 17 (JDK).
 - (Opcional) Maven instalado globalmente.
 
 ### 2. Levantar Infraestructura
