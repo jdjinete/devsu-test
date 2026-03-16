@@ -29,10 +29,10 @@ docker-compose ps
 
 ### Microservicios
 
-| Microservicio | Puerto | BD | Responsabilidad |
-|---------------|--------|-----|-----------------|
-| **ms-clientes** | `8001` | `db_clientes` | Gestión de Personas y Clientes |
-| **ms-cuentas** | `8002` | `db_cuentas` | Cuentas, Movimientos y Reportes |
+| Microservicio | Puerto | BD | Documentación | Responsabilidad |
+|---------------|--------|-----|---------------|-----------------|
+| **ms-clientes** | `8001` | `db_clientes` | [README.md](./ms-clientes/README.md) | Gestión de Personas y Clientes |
+| **ms-cuentas** | `8002` | `db_cuentas` | - | Cuentas, Movimientos y Reportes |
 
 ### Stack Tecnológico
 - **Java 17+** con Spring Boot
@@ -236,14 +236,28 @@ amqp://guest:guest@rabbitmq:5672/      (desde Docker)
 ### Logs en Tiempo Real
 ```bash
 docker-compose logs -f            # Todos
-docker-compose logs -f postgres   # Solo PostgreSQL
-docker-compose logs -f rabbitmq   # Solo RabbitMQ
+docker-compose logs -f ms-postgres  # Solo PostgreSQL
+docker-compose logs -f ms-rabbitmq  # Solo RabbitMQ
 ```
+
+### Ejecutar y Depurar (Run & Debug)
+Para desarrollar el microservicio `ms-clientes`:
+
+1.  **Levantar Infra:** `docker-compose up -d`
+2.  **IDE (Recomendado):**
+    *   Abrir la carpeta raíz en VS Code o IntelliJ.
+    *   Localizar la clase `MsClientesApplication.java`.
+    *   Ejecutar en modo **Debug** (F5 en VS Code).
+3.  **Terminal:**
+    *   Build: `mvn clean package`
+    *   Run: `java -jar target/ms-clientes-0.0.1-SNAPSHOT.jar`
+
+Para más detalles, consulta el [README de ms-clientes](./ms-clientes/README.md).
 
 ### Acceder a Bases de Datos
 ```bash
 # PostgreSQL CLI
-docker-compose exec postgres psql -U admin -d db_clientes
+docker-compose exec ms-postgres psql -U postgres -d db_clientes
 
 # Ver tablas
 \dt
