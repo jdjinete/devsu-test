@@ -22,25 +22,31 @@ docker-compose ps
 # 4. Acceder a RabbitMQ Management
 # http://localhost:15672  (guest / guest)
 ```
-
+### 💡 Importante: Datos de Prueba
+El sistema se inicializa automáticamente con:
+- **3 Clientes**: Jose Lema (1001), Marianela Montalvo (1002), Juan Osorio (1003).
+- **5 Cuentas**: Diversas cuentas de ahorro y corriente para los clientes listados.
+- **Movimientos Iniciales**: Se incluyen movimientos de ejemplo para validar los reportes de inmediato.
+- **Passwords**: Todos los clientes tienen contraseñas de al menos 8 caracteres (ej: `12345678`) para cumplir con las validaciones de dominio.
 ---
 
 ## 🏗️ 2. Arquitectura del Sistema
 
 El sistema se compone de dos microservicios desacoplados que interactúan mediante **RabbitMQ** para garantizar la consistencia eventual.
 
-| Microservicio | Puerto | Base de Datos | Responsabilidad |
-|---------------|--------|---------------|-----------------|
-| **ms-clientes** | `8001` | `db_clientes` | CRUD de Personas y Clientes. Emite eventos de inhabilitación. |
-| **ms-cuentas** | `8002` | `db_cuentas` | Gestión de Cuentas, Movimientos y Reportes Financieros. |
+| Microservicio | Puerto Externo | Puerto Interno | Base de Datos | Responsabilidad |
+|---------------|----------------|----------------|---------------|-----------------|
+| **ms-clientes** | `8001`        | `8080`         | `db_clientes` | CRUD de Personas y Clientes. Emite eventos de inhabilitación. |
+| **ms-cuentas**  | `8002`        | `8080`         | `db_cuentas`  | Gestión de Cuentas, Movimientos y Reportes Financieros. |
+
 
 ### Stack Tecnológico
-- **Java 17+** con Spring Boot
-- **PostgreSQL** para persistencia
-- **RabbitMQ** para eventos asincronos
-- **Docker & Docker Compose** para orquestación
+- **Java 17+** con Spring Boot  3.x
+- **PostgreSQL 16** (Alpine) para persistencia
+- **RabbitMQ 3.13** (Management Plugin) para eventos asincronos
+- **Docker & Docker Compose** (V2 recomendado) para orquestación
 - **JUnit 5, Mockito, Testcontainers** para pruebas
-- **MapStruct, Lombok** para utilidades
+- **Lombok** para reducción de boilerplate, utilidades
 
 ---
 
@@ -101,25 +107,28 @@ graph TD
 
     C3 -.->|Topic: cliente.inhabilitado| M1
 ```
+### Clientes (`ms-clientes`)
+- **Listar todos**: `GET http://localhost:8001/api/clientes`
+- **Obtener uno**: `GET http://localhost:8001/api/clientes/{id}`
 
+### Cuentas y Movimientos (`ms-cuentas`)
+- **Movimientos**: `POST http://localhost:8002/movimientos` (Valida saldo F3)
+- **Reporte consolidado (F4)**: 
+  `GET http://localhost:8002/reportes?fecha=YYYY-MM-DD,YYYY-MM-DD&cliente={id}`
+  *Ejemplo:* `http://localhost:8002/reportes?fecha=2022-01-01,2025-12-31&cliente=1001`
 ---
 
 ## 🧪 4. Estrategia y Ejecución de Pruebas
 
-### Pruebas Unitarias (F5)
-*   **Implementación**: `CuentaBalanceTest.java` en `ms-cuentas`.
-*   **Cobertura**: Validaciones de saldo, depósitos, retiros y excepciones personalizadas.
-*   **Ejecución**:
+### Pruebas Unitarias de Dominio (F5)
+Ubicadas en `ms-cuentas`, validan la lógica de saldos sin tocar la base de datos.
     ```bash
     cd ms-cuentas
     mvn test
     ```
 
 ### Pruebas de Integración (F6)
-*   **Implementación**: `ClienteIntegrationTest.java` en `ms-clientes`.
-*   **Tecnología**: **Testcontainers** (PostgreSQL real) + **MockMvc**.
-*   **Cobertura**: Creación de clientes, persistencia real y manejo de conflictos (duplicados).
-*   **Ejecución**:
+Ubicadas en `ms-clientes`, prueban el flujo completo desde el Controller hasta la base de datos real.
     ```bash
     cd ms-clientes
     mvn test
@@ -127,12 +136,22 @@ graph TD
 
 ---
 
-## 🐋 5. Despliegue y Contenedores (F7)
+## 🐋 5. Infraestructura, Docker, Despliegue y Contenedores (F7)
 
 Se han implementado **Dockerfiles Multistage** optimizados para reducir el tamaño de la imagen final y mejorar la seguridad:
 1.  **Stage builder**: Compila el código usando Maven 3.8.
 2.  **Stage jre**: Ejecuta el JAR corregido en un entorno ligero JRE Alpine.
 3.  **Seguridad**: Ejecución con usuario no-root (`devsu`).
+
+### Red y Conectividad
+Ambos microservicios están configurados para correr en el puerto **8080** internamente, facilitando la estandarización en contenedores. 
+Para acceso externo, se mapean los puertos `8001` y `8002`.
+
+### Persistencia
+- **`BaseDatos.sql`**: Contiene el DDL y DML (Inserts) que se ejecutan al primer arranque.
+- **`scripts/init-db.sql`**: Script encargado de crear las bases de datos `db_clientes` y `db_cuentas` antes de que los servicios intenten conectar.
+
+---
 
 ### Orquestación de Red
 ```
@@ -204,13 +223,13 @@ ms-xxxxx/ (ms-clientes | ms-cuentas)
 ├── src/main/java/com/devsu/xxxxx/
 │   ├── domain/                          # 1. CORE: Negocio Pura
 │   │   ├── entity/                      # Entidades (Sin Frameworks)
-│   │   ├── exception/                   # Excepciones (F3)
+│   │   ├── exception/                   # Excepciones 
 │   │   └── port/                        # Interfaces de Salida (Repos)
 │   │
 │   ├── application/                     # 2. CASOS DE USO: Orquestación
 │   │   ├── port/in/                     # Interfaces de Entrada (API)
-│   │   ├── service/                     # Lógica de Servicios (F2)
-│   │   └── dto/                         # DTOs (Reporte F4)
+│   │   ├── service/                     # Lógica de Servicios
+│   │   └── dto/                         # DTOs 
 │   │
 │   └── infrastructure/                  # 3. INFRAESTRUCTURA: Adaptadores
 │       ├── adapters/
@@ -222,8 +241,8 @@ ms-xxxxx/ (ms-clientes | ms-cuentas)
 │       └── config/                      # Spring Beans & MQ Config
 │
 └── src/test/java/com/devsu/xxxxx/       # 🧪 CONTEXTO DE PRUEBAS
-    ├── domain/                          # 🟢 Unit Tests (F5)
-    └── infrastructure/                  # 🔵 Integration Tests (F6)
+    ├── domain/                          # 🟢 Unit Tests 
+    └── infrastructure/                  # 🔵 Integration Tests 
 ```
 ---
 
@@ -293,7 +312,17 @@ El archivo `[BaseDatos.sql](./BaseDatos.sql)` inicializa el sistema con:
     docker-compose exec postgres psql -U postgres -d db_cuentas
     ```
 
-### Troubleshooting Rápido
+### 🐛Troubleshooting Rápido
+
+| Problema | Causa Común | Solución |
+|----------|-------------|----------|
+| **Error 400 en POST Clientes** | Password corta | El dominio exige min 8 caracteres. |
+| **Error de parseo en Reporte** | Formato de fecha | Usar `YYYY-MM-DD`. Ejemplo: `2022-01-01`. |
+| **Bases de datos vacías** | Fallo en init | Borrar volúmenes: `docker-compose down -v` y reiniciar. |
+| **Contenedor Healthy pero sin red** | Mapeo de puerto | Los servicios internos usan 8080; se exponen en 8001/8002. |
+
+---
+
 *   **Error 409 Conflict**: Identificación duplicada en clientes.
 *   **Error 400 "Saldo no disponible"**: Retiro excede el saldo actual (Validación F3).
 
