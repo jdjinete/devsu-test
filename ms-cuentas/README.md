@@ -17,7 +17,7 @@ Este microservicio es responsable de la gestión de cuentas bancarias, el regist
 
 ### Comunicación Asincrónica
 - **Consumidor (RabbitMQ):** Escucha eventos del exchange `cliente.events`. 
-- **Acción:** Cuando un cliente es inhabilitado en `ms-clientes`, este microservicio bloquea/inactiva automáticamente todas las cuentas asociadas a dicho `clienteId`.
+- **Acción:** Cuando un cliente es inhabilitado en `ms-clientes`, este microservicio marca automáticamente todas las cuentas asociadas a dicho `clienteId` como `estado = false`.
 
 ---
 
@@ -32,6 +32,10 @@ Este microservicio es responsable de la gestión de cuentas bancarias, el regist
 | `GET` | `/movimientos` | Historial completo de movimientos |
 | `GET` | `/reportes` | Genera estado de cuenta por cliente y rango de fechas |
 
+### Generación de Reportes
+- **Endpoint**: `/reportes?fecha=YYYY-MM-DD,YYYY-MM-DD&cliente={id}`
+- **Formato de Fecha**: Debe ser `YYYY-MM-DD` (ej: `2022-01-01,2022-12-31`). El sistema maneja automáticamente el rango desde el inicio del primer día hasta el final del último.
+
 ---
 
 ## 🛠️ Guía de Run & Debug (Desarrollo)
@@ -42,6 +46,12 @@ Este microservicio es responsable de la gestión de cuentas bancarias, el regist
 - Maven.
 
 ### 2. Levantar Infraestructura
+
+### En Contenedor
+El servicio corre internamente en el puerto **8080** y se expone en el **8002**.
+Configuración de persistencia:
+- `SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db_cuentas`
+
 Desde la raíz del proyecto:
 ```bash
 docker-compose up -d
@@ -66,13 +76,14 @@ java -jar ms-cuentas-0.0.1-SNAPSHOT.jar
 
 ---
 
-## 🧪 Estrategia de Pruebas (F5)
+## 🧪 Estrategia de Pruebas 
 - **Pruebas Unitarias:** Localizadas en `src/test/java/.../domain/CuentaBalanceTest.java`.
-- **Foco:** Validación exhaustiva de la lógica de saldos y manejo de excepciones de negocio sin dependencias de base de datos.
+- **Foco:** Validación exhaustiva de la lógica de saldos y manejo de excepciones de negocio (`SaldoNoDisponibleException`) sin dependencias de base de datos.
 
 ---
 
 ## 📝 Notas de Implementación
 - **Arquitectura Hexagonal:** Separación total entre el `domain` (reglas puras) y la `infrastructure` (JPA/Spring).
-- **Reporte F4:** El DTO de reporte está configurado con Jackson para devolver exactamente los nombres de campos requeridos (con espacios y PascalCase).
-- **Consistencia:** Uso de `BigDecimal` para evitar errores de redondeo de punto flotante.
+- **Port Standardization:** Puerto 8080 interno para simplificar el despliegue Docker.
+- **Jackson Mapping:** El `ReporteDTO` usa anotaciones `@JsonProperty` para cumplir exactamente con el formato de salida requerido (Nombres con espacios y PascalCase).
+- **Consistencia:** Uso de `BigDecimal` para todas las operaciones monetarias.
