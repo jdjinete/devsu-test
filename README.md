@@ -337,32 +337,65 @@ docker-compose logs -f ms-rabbitmq  # Solo RabbitMQ
 ```
 
 
-### Ejecutar y Depurar (Run & Debug)
- `ms-clientes`:
+### 🛠️ Depuración en VS Code (Debug Mode)
 
-1.  **Levantar Infra:** `docker-compose up -d`
-2.  **IDE (Recomendado):**
-    *   Abrir la carpeta raíz en VS Code o IntelliJ.
-    *   Localizar la clase `MsClientesApplication.java`.
-    *   Ejecutar en modo **Debug** (F5 en VS Code).
-3.  **Terminal:**
-    *   Build: `mvn clean package`
-    *   Run: `java -jar target/ms-clientes-0.0.1-SNAPSHOT.jar`
+Para depurar los microservicios localmente utilizando la infraestructura (Bases de Datos y RabbitMQ) que corre en Docker:
 
-Para más detalles, consulta el [README de ms-clientes](./ms-clientes/README.md).
+1.  **Prepación de Infraestructura:**
+    Asegúrese de que solo la base de datos y RabbitMQ estén corriendo. Si levantó todo con `docker-compose up`, detenga solo los microservicios para evitar conflictos de puertos:
+    ```bash
+    docker-compose stop ms-clientes ms-cuentas
+    ```
 
- `ms-cuentas`:
+2.  **Configuración de `launch.json`:**
+    Cree o verifique el archivo `.vscode/launch.json` con la siguiente configuración:
 
-1.  **Levantar Infra:** `docker-compose up -d`
-2.  **IDE (Recomendado):**
-    *   Abrir la carpeta raíz en VS Code o IntelliJ.
-    *   Localizar la clase [MsCuentasApplication.java](cci:7://file:///g:/CODE/Devsu-java-prueba/devsu-test/ms-cuentas/src/main/java/com/devsu/cuentas/MsCuentasApplication.java:0:0-0:0).
-    *   Ejecutar en modo **Debug** (F5 en VS Code).
-3.  **Terminal:**
-    *   **Build:** `mvn clean package -pl ms-cuentas -am`
-    *   **Run:** `java -jar ms-cuentas/target/ms-cuentas-0.0.1-SNAPSHOT.jar`
+    ```json
+    {
+        "version": "0.2.0",
+        "configurations": [
+            {
+                "type": "java",
+                "name": "Debug ms-clientes (Local)",
+                "request": "launch",
+                "mainClass": "com.devsu.clientes.MsClientesApplication",
+                "projectName": "ms-clientes",
+                "env": {
+                    "SPRING_DATASOURCE_URL": "jdbc:postgresql://localhost:5433/db_clientes",
+                    "SPRING_RABBITMQ_HOST": "localhost",
+                    "SERVER_PORT": "8001"
+                }
+            },
+            {
+                "type": "java",
+                "name": "Debug ms-cuentas (Local)",
+                "request": "launch",
+                "mainClass": "com.devsu.cuentas.MsCuentasApplication",
+                "projectName": "ms-cuentas",
+                "env": {
+                    "SPRING_DATASOURCE_URL": "jdbc:postgresql://localhost:5433/db_cuentas",
+                    "SPRING_RABBITMQ_HOST": "localhost",
+                    "SERVER_PORT": "8002"
+                }
+            }
+        ],
+        "compounds": [
+            {
+                "name": "Debug Ambos Servicios",
+                "configurations": [
+                    "Debug ms-clientes (Local)",
+                    "Debug ms-cuentas (Local)"
+                ]
+            }
+        ]
+    }
+    ```
 
-Para más detalles, consulta el [README de ms-cuentas](./ms-cuentas/README.md).
+3.  **Iniciar Depuración:**
+    - Abra la vista **Run and Debug** en VS Code (`Ctrl+Shift+D`).
+    - Seleccione **"Debug Ambos Servicios"** y presione `F5`.
+    - Esto permite depurar ambos microservicios simultáneamente, permitiendo trazabilidad completa entre ellos.
+
 
 
 ### Acceder a Bases de Datos
