@@ -89,6 +89,6 @@ class ClienteIntegrationTest {
         mockMvc.perform(post("/api/clientes")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isBadRequest()); // O el código que retorne tu ExceptionHandler para DataIntegrity
+                .andExpect(status().isConflict());
     }
 }
