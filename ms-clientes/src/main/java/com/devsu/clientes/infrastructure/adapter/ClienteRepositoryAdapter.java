@@ -122,7 +122,7 @@ public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
 
     private Cliente toDomain(ClienteEntity entity) {
         if (entity == null) return null;
-        return Cliente.crear(
+        Cliente domain = Cliente.crear(
                 entity.getNombre(),
                 entity.getGenero(),
                 entity.getEdad(),
@@ -131,5 +131,7 @@ public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
                 entity.getTelefono(),
                 entity.getContrasena()
         );
+        domain.setClienteId(entity.getClienteId());
+        return domain;
     }
 }

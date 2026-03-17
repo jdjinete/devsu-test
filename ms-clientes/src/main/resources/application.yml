@@ -1,12 +1,12 @@
 server:
-  port: 8001
+  port: 8080
 
 spring:
   application:
     name: ms-clientes
   
   datasource:
-    url: jdbc:postgresql://localhost:5433/db_clientes
+    url: jdbc:postgresql://postgres:5432/db_clientes
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -21,7 +21,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: guest
     password: guest

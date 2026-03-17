@@ -251,6 +251,10 @@ public class Cliente extends Persona {
         return ultimoAcceso;
     }
 
+    public void setClienteId(Long clienteId) {
+        this.clienteId = clienteId;
+    }
+
     // =====================================================================
     // Métodos equals y hashCode (Basados en Cliente ID)
     // =====================================================================

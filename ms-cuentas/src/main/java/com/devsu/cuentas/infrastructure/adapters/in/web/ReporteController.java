@@ -25,8 +25,8 @@ public class ReporteController {
         // Pero el requerimiento dice: /reportes?fecha={rango_fechas}&cliente={cliente_id}
         
         String[] partes = rangoFechas.split(",");
-        LocalDateTime inicio = LocalDateTime.parse(partes[0].trim());
-        LocalDateTime fin = LocalDateTime.parse(partes[1].trim());
+        LocalDateTime inicio = java.time.LocalDate.parse(partes[0].trim()).atStartOfDay();
+        LocalDateTime fin = java.time.LocalDate.parse(partes[1].trim()).atTime(java.time.LocalTime.MAX);
         
         return reporteUseCase.generarReporte(clienteId, inicio, fin);
     }

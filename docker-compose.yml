@@ -23,7 +23,6 @@
 #
 # ============================================================================
 
-version: '3.9'
 
 services:
   # ========================================================================
@@ -47,14 +46,15 @@ services:
       # Persistencia de datos en volumen nombrado
       - postgres_data:/var/lib/postgresql/data
       # Script de inicialización para crear esquemas/bases de datos
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/1-init.sql
+      - ./BaseDatos.sql:/docker-entrypoint-initdb.d/2-base.sql
     networks:
       - backend-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
-      interval: 10s
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
     # Política de reinicio automático si hay error
     restart: unless-stopped
 
