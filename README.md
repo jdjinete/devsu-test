@@ -292,8 +292,6 @@ Contraseña: guest
 - **Docker:** `docker-compose.yml`
 - **Configuración:** `.env.example`
 
-> **📖 Nota:** Documentación detallada de arquitectura y decisiones de diseño está disponible en la carpeta `.engram/` (solo en desarrollo local)
-
 ---
 
 ## 🤝 Contribuir
@@ -308,18 +306,6 @@ Al añadir nuevas características:
 
 ---
 
-## 🚨 Notas de Seguridad
-
-**NUNCA** commitear a git:
-- `❌ .env` (usa `.env.example`)
-- `❌ Credenciales` en código
-- `❌ Claves privadas`
-- `❌ localhost/127.0.0.1` hardcodeado
-
-Ver [.gitignore](.gitignore) para archivos ignorados.
-
----
-
 ## 📞 Troubleshooting Rápido
 
 | Problema | Solución |
@@ -329,8 +315,6 @@ Ver [.gitignore](.gitignore) para archivos ignorados.
 | Docker no inicia | Reiniciar Docker Desktop |
 | Datos corruptos | `docker-compose down -v` |
 | No ve cambios | Reconstruir: `docker-compose up -d --build` |
-
-Ver `.engram/SETUP.md` en tu copia local para más detalles
 
 ---
 
