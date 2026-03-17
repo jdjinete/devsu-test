@@ -91,6 +91,52 @@ services:
     # Política de reinicio automático si hay error
     restart: unless-stopped
 
+  # ========================================================================
+  # Microservicio ms-clientes
+  # ========================================================================
+  ms-clientes:
+    build:
+      context: .
+      dockerfile: ms-clientes/Dockerfile
+    container_name: ms-clientes
+    ports:
+      - "8001:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db_clientes
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+  # ========================================================================
+  # Microservicio ms-cuentas
+  # ========================================================================
+  ms-cuentas:
+    build:
+      context: .
+      dockerfile: ms-cuentas/Dockerfile
+    container_name: ms-cuentas
+    ports:
+      - "8002:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db_cuentas
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend-network
+
 # ============================================================================
 # VOLÚMENES NOMBRADOS
 # Almacenamiento persistente para los contenedores
