@@ -21,6 +21,7 @@
 
     <modules>
 		<module>ms-clientes</module>
+		<module>ms-cuentas</module>
 		</modules>
 
 </project>

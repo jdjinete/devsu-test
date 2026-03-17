@@ -9,10 +9,10 @@
 		<relativePath>../pom.xml</relativePath> 
     </parent>
     <groupId>com.devsu</groupId>
-    <artifactId>ms-clientes</artifactId>
+    <artifactId>ms-cuentas</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ms-clientes</name>
-    <description>Microservicio de Gestión de Clientes</description>
+    <name>ms-cuentas</name>
+    <description>Microservicio de Gestión de Cuentas y Movimientos</description>
     <properties>
         <java.version>17</java.version>
         <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
@@ -60,21 +60,6 @@
         <dependency>
             <groupId>org.springframework.amqp</groupId>
             <artifactId>spring-rabbit-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-testcontainers</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
