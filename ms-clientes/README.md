@@ -9,6 +9,7 @@ Este microservicio es responsable de la gestión de información de personas y c
 ### Entidades de Dominio
 - **Persona:** Clase base con atributos comunes (nombre, identificación, dirección, etc.).
 - **Cliente:** Extiende de Persona con atributos específicos (contraseña, estado, clienteId).
+- **Lógica de Validación:** El dominio exige que la contraseña tenga **al menos 8 caracteres**.
 
 ### Persistencia (Infraestructura)
 - Usamos **JPA** con la estrategia de herencia `@Inheritance(strategy = InheritanceType.JOINED)`.
@@ -22,18 +23,22 @@ Este microservicio es responsable de la gestión de información de personas y c
 
 ## 🚀 Endpoints REST (Base URL: `/api/clientes`)
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| `POST` | `/` | Crea un nuevo cliente |
-| `GET` | `/` | Lista todos los clientes |
-| `GET` | `/{id}` | Obtiene un cliente por su ID único |
-| `PUT` | `/{id}` | Actualiza datos básicos de un cliente |
-| `DELETE` | `/{id}` | Elimina (lógicamente) un cliente |
-| `PATCH` | `/{id}/contrasena` | Actualiza la contraseña del cliente |
+| Método | Endpoint | Puerto Externo | Descripción |
+|--------|----------|----------------|-------------|
+| `POST` | `/`      | `8001`         | Crea un nuevo cliente (Min 8 chars pass) |
+| `GET`  | `/`      | `8001`         | Lista todos los clientes |
+| `GET`  | `/{id}`  | `8001`         | Obtiene un cliente por su ID único |
+| `PUT`  | `/{id}`  | `8001`         | Actualiza datos básicos de un cliente |
+| `DELETE`| `/{id}` | `8001`         | Elimina (lógicamente) un cliente |
 
 ---
 
-## 🛠️ Guía de Run & Debug (Desarrollo)
+## 🛠️ Guía de Run & Debug (Producción/Contenedor)
+
+### En Docker
+El servicio corre internamente en el puerto **8080** y se expone en el **8001**.
+La base de datos se configura mediante variables de entorno en el `docker-compose.yml`:
+- `SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/db_clientes`
 
 ### 1. Requisitos Previos
 - Docker y Docker Compose (para BD y RabbitMQ).
@@ -89,3 +94,5 @@ java -jar ms-clientes-0.0.1-SNAPSHOT.jar
 - **MapStruct:** Se utiliza para mapear entre DTOs y Entidades de Dominio (Configurado para inyección de Spring).
 - **Global Exception Handler:** Centraliza el manejo de errores devolviendo un JSON estructurado con `timestamp`, `status`, `error` y `message`.
 - **Validaciones:** Se utiliza `jakarta.validation` para asegurar la integridad de los datos de entrada.
+- **Port Standardization:** Se usa el puerto 8080 internamente para consistencia entre microservicios.
+- **Validaciones:** Se utiliza `jakarta.validation` para los requests y lógica de dominio para reglas críticas.
