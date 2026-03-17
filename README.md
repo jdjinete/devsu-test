@@ -1,332 +1,172 @@
-# 📚 Índice del Proyecto - Sistema Financiero Distribuido
+# 📚 Sistema Financiero Distribuido - Proyecto Devsu
+
+Este proyecto implementa un sistema financiero robusto basado en microservicios, diseñado bajo los principios de **Arquitectura Hexagonal (Clean Architecture)**, comunicación asincrónica y alta cobertura de pruebas técnicas.
 
 ---
 
-## 🚀 Guía de Inicio Rápido
+## 🚀 1. Guía de Inicio Rápido (5 Minutos)
 
-### Primeros Pasos (5 minutos)
+Para levantar el entorno completo (Infraestructura + Microservicios) de forma automática:
 
 ```bash
-# 1. Clonar el repositorio
+# 1. Clonar y entrar al proyecto
 git clone <url>
 cd devsu-test
 
-# 2. Levantar Infrastructure con Docker
-docker-compose up -d
+# 2. Levantar todo el stack con Docker (Construye imágenes y arranca servicios)
+docker-compose up -d --build
 
-# 3. Verificar que todo esté corriendo
+# 3. Verificar que los contenedores estén corriendo
 docker-compose ps
-
-# 4. Acceder a RabbitMQ Management
-# http://localhost:15672  (guest / guest)
-```
-
-> **Nota:** La documentación técnica detallada (.engram) está disponible solo en desarrollo local (no se sube a git)
-
----
-
-## 🏗️ Arquitectura del Sistema
-
-### Microservicios
-
-| Microservicio | Puerto | BD | Documentación | Responsabilidad |
-|---------------|--------|-----|---------------|-----------------|
-| **ms-clientes** | `8001` | `db_clientes` | [README.md](./ms-clientes/README.md) | Gestión de Personas y Clientes |
-| **ms-cuentas** | `8002` | `db_cuentas` | - | Cuentas, Movimientos y Reportes |
-
-### Stack Tecnológico
-- **Java 17+** con Spring Boot
-- **PostgreSQL** para persistencia
-- **RabbitMQ** para eventos asincronos
-- **Docker & Docker Compose** para orquestación
-- **JUnit 5, Mockito, Testcontainers** para pruebas
-- **MapStruct, Lombok** para utilidades
-
----
-
-## 🌐 Topología de Red
-
-```
-┌─ Tu Máquina (localhost) ────────────────────┐
-│  8001 → ms-clientes                         │
-│  8002 → ms-cuentas                          │
-│  5432 → PostgreSQL                          │
-│  5672 → RabbitMQ AMQP                       │
-│ 15672 → RabbitMQ Management                 │
-└─────────────────────────────────────────────┘
-         ↓
-┌─ Docker Network (backend-network) ─────────┐
-│  postgres:5432 (BD)                         │
-│  rabbitmq:5672 (Message Broker)             │
-│  ms-clientes:8080 (interno)                 │
-│  ms-cuentas:8080 (interno)                  │
-└─────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📋 Scripts de Inicialización
+## 🏗️ 2. Arquitectura del Sistema
 
-### `scripts/init-db.sql`
-Crea las bases de datos y usuarios en PostgreSQL:
-- `db_clientes` (para ms-clientes)
-- `db_cuentas` (para ms-cuentas)
-- Usuarios específicos con permisos limitados
+El sistema se compone de dos microservicios desacoplados que interactúan mediante **RabbitMQ** para garantizar la consistencia eventual.
 
-### `scripts/rabbitmq-definitions.json`
-Pre-configura RabbitMQ con:
-- Exchanges: `cliente.events`, `cuenta.events`
-- Queues: `cliente.eventos.queue`, `cuenta.eventos.queue`
-- Bindings y usuarios
+| Microservicio | Puerto | Base de Datos | Responsabilidad |
+|---------------|--------|---------------|-----------------|
+| **ms-clientes** | `8001` | `db_clientes` | CRUD de Personas y Clientes. Emite eventos de inhabilitación. |
+| **ms-cuentas** | `8002` | `db_cuentas` | Gestión de Cuentas, Movimientos y Reportes Financieros. |
 
-**Más detalles:** Ver [scripts/README.md](scripts/README.md)
-
----
-
-## 📁 Estructura del Proyecto
-
-```
-devsu-test/
-│
-├── scripts/                      # 🔧 Scripts de Inicialización
-│   ├── init-db.sql              # Inicialización PostgreSQL
-│   ├── rabbitmq-definitions.json # Configuración RabbitMQ
-│   └── README.md                 # Documentación de scripts
-│
-├── ms-clientes/                  # 🎭 Microservicio 1 (por crear)
-│   ├── src/main/java/com/devsu/clientes/
-│   │   ├── domain/               # Lógica de negocio pura
-│   │   ├── application/          # Casos de uso
-│   │   └── infrastructure/       # Adaptadores técnicos
-│   ├── src/test/java/...         # Tests
-│   └── pom.xml
-│
-├── ms-cuentas/                   # 💰 Microservicio 2 (por crear)
-│   ├── src/main/java/com/devsu/cuentas/
-│   │   ├── domain/               # Lógica de negocio pura
-│   │   ├── application/          # Casos de uso
-│   │   └── infrastructure/       # Adaptadores técnicos
-│   ├── src/test/java/...         # Tests
-│   └── pom.xml
-│
-├── docker-compose.yml            # 🐋 Orquestación Docker
-├── .env.example                  # 🔐 Variables de entorno (template)
-├── .gitignore                    # Git ignore (archivos sensibles)
-└── README.md                     # Este archivo
-```
+### Estratificación de Capas (Hexagonal)
+Cada microservicio sigue estrictamente el aislamiento de capas:
+*   **`domain`**: Entidades puras (POJOs), excepciones de negocio y puertos (interfaces de repositorios). **Cero dependencias de framework.**
+*   **`application`**: Casos de uso y orquestación (Servicios). Maneja la lógica de flujo sin detalles técnicos.
+*   **`infrastructure`**: Adaptadores JPA, Controladores REST, Consumidores RabbitMQ y configuraciones de Spring Boot.
 
 ---
 
-## 🏛️ Clean Architecture (Hexagonal)
+## 📈 3. Casos de Uso y Flujos (Muestra Gráfica)
 
-Cada microservicio debe seguir esta estructura:
+### A. Registro de Movimiento y Validación de Saldo (F2/F3)
+Este flujo orquestado en `ms-cuentas` asegura que el saldo de la cuenta sea validado en el **Dominio** antes de persistirse.
 
+```mermaid
+sequenceDiagram
+    participant API as Cliente/Postman
+    participant Ctrl as MovimientoController
+    participant UC as MovimientoUseCase (Service)
+    participant Dom as Cuenta (Domain Entity)
+    participant Repo as JDBC/JPA Adapter
+
+    API->>Ctrl: POST /movimientos { valor: -575.00 }
+    Ctrl->>UC: registrarMovimiento(mov)
+    UC->>Repo: findByNumeroCuenta()
+    Repo-->>UC: Cuenta Objeto
+    UC->>Dom: retirar(575.00)
+    Note over Dom: Valida Saldo Actual >= Retiro
+    alt Saldo Insuficiente
+        Dom-->>UC: throw SaldoNoDisponibleException
+        UC-->>Ctrl: Propaga Excepción
+        Ctrl-->>API: HTTP 400 "Saldo no disponible"
+    else Saldo Suficiente
+        Dom->>Dom: Actualizar Saldo Actual
+        UC->>Repo: save(Cuenta)
+        UC->>Repo: save(Movimiento)
+        UC-->>Ctrl: Retorna Movimiento Creado
+        Ctrl-->>API: HTTP 201 Created
+    end
 ```
-ms-xxxxx/
-├── src/main/java/com/devsu/xxxxx/
-│   ├── domain/                          # Core business logic
-│   │   ├── entity/                      # Domain entities (NO Spring)
-│   │   ├── exception/                   # Business exceptions
-│   │   ├── port/                        # Interfaces (outbound)
-│   │   │   ├── RepositoryPort.java
-│   │   │   └── EventPublisherPort.java
-│   │   └── vo/                          # Value objects
-│   │
-│   ├── application/                     # Use cases (Orchestration)
-│   │   ├── port/                        # Inbound ports (interfaces)
-│   │   ├── service/                     # Implementations
-│   │   └── dto/                         # DTOs internos
-│   │
-│   └── infrastructure/                  # Technical details
-│       ├── adapters/
-│       │   ├── in/
-│       │   │   ├── web/                 # REST Controllers
-│       │   │   │   ├── controller/
-│       │   │   │   ├── dto/
-│       │   │   │   └── exception/
-│       │   │   └── event/               # RabbitMQ Consumers
-│       │   │
-│       │   └── out/
-│       │       ├── persistence/         # JPA Entities, Repos
-│       │       │   └── mapper/          # MapStruct
-│       │       └── event/               # RabbitMQ Producers
-│       │
-│       └── config/                      # Spring Configuration
-│           ├── RabbitMQConfig.java
-│           └── JpaConfig.java
-└── src/test/java/...                    # Tests
+
+### B. Comunicación Asincrónica (FInhabilitar Cliente)
+Cuando un cliente es eliminado o inactivado en `ms-clientes`, se propaga un evento para bloquear sus cuentas.
+
+```mermaid
+graph TD
+    subgraph "Microservicio Clientes"
+        C1[DELETE /api/clientes/1] --> C2[ClienteUseCase]
+        C2 -->|Evento| C3[RabbitMQ: cliente.events]
+    end
+
+    subgraph "Microservicio Cuentas"
+        M1[Queue: cuenta.eventos.queue] --> M2[ClienteEventConsumer]
+        M2 --> M3[Inactivar Cuentas clienteId: 1]
+    end
+
+    C3 -.->|Topic: cliente.inhabilitado| M1
 ```
 
 ---
 
-## 🌉 Ejemplo: Comunicación Asincrónica
+## 🧪 4. Estrategia y Ejecución de Pruebas
 
-### Cliente es Eliminado en ms-clientes
+### Pruebas Unitarias (F5)
+*   **Implementación**: `CuentaBalanceTest.java` en `ms-cuentas`.
+*   **Cobertura**: Validaciones de saldo, depósitos, retiros y excepciones personalizadas.
+*   **Ejecución**:
+    ```bash
+    cd ms-cuentas
+    mvn test
+    ```
 
-```
-1. DELETE /api/clientes/{id}
-   ↓
-2. ms-clientes elimina cliente de BD
-   ↓
-3. ms-clientes PUBLICA "ClienteInhabilitadoEvent"
-   ↓
-4. Evento va a RabbitMQ (exchange: cliente.events)
-   ↓
-5. ms-cuentas CONSUME evento
-   ↓
-6. ms-cuentas busca cuentas del cliente
-   ↓
-7. ms-cuentas marca cuentas como INACTIVAS
-```
-
-> **🚀 Flow Recomendado:** Este es el patrón implementado en los microservicios
+### Pruebas de Integración (F6)
+*   **Implementación**: `ClienteIntegrationTest.java` en `ms-clientes`.
+*   **Tecnología**: **Testcontainers** (PostgreSQL real) + **MockMvc**.
+*   **Cobertura**: Creación de clientes, persistencia real y manejo de conflictos (duplicados).
+*   **Ejecución**:
+    ```bash
+    cd ms-clientes
+    mvn test
+    ```
 
 ---
 
-## 📊 Conexiones de Servicios
+## 🐋 5. Despliegue y Contenedores (F7)
 
-### PostgreSQL - Docker (Puerto 5433)
-```
-jdbc:postgresql://localhost:5433/db_clientes
-jdbc:postgresql://localhost:5433/db_cuentas
-```
+Se han implementado **Dockerfiles Multistage** optimizados para reducir el tamaño de la imagen final y mejorar la seguridad:
+1.  **Stage builder**: Compila el código usando Maven 3.8.
+2.  **Stage jre**: Ejecuta el JAR corregido en un entorno ligero JRE Alpine.
+3.  **Seguridad**: Ejecución con usuario no-root (`devsu`).
 
-### PostgreSQL - Existente (Puerto 5432)
+### Orquestación de Red
 ```
-jdbc:postgresql://localhost:5432/...
-```
-
-### PostgreSQL - Desde dentro de Docker
-```
-jdbc:postgresql://postgres:5432/db_clientes
-jdbc:postgresql://postgres:5432/db_cuentas
-```
-
-### RabbitMQ
-```
-amqp://guest:guest@localhost:5672/     (local)
-amqp://guest:guest@rabbitmq:5672/      (desde Docker)
+┌─ Host (Tu Máquina) ────────┐    ┌─ Docker Internal Network ──┐
+│  8001 (ms-clientes)  ──────┼───>│  ms-clientes:8080         │
+│  8002 (ms-cuentas)   ──────┼───>│  ms-cuentas:8080          │
+│  15672 (Rabbit UI)  ───────┼───>│  rabbitmq:15672           │
+│  5433 (Postgres Ext) ──────┼───>│  postgres:5432            │
+└────────────────────────────┘    └───────────────────────────┘
 ```
 
 ---
 
-## 🧪 Estrategia de Pruebas
+## 📋 6. Datos de Prueba Iniciales (Casos de Uso)
 
-### Pruebas Unitarias
-- ✅ Entidades de dominio
-- ✅ Casos de uso (services)
-- ✅ Value objects
-- **Tool:** JUnit 5 + Mockito
+El archivo `[BaseDatos.sql](./BaseDatos.sql)` inicializa el sistema con:
 
-### Pruebas de Integración
-- ✅ Controllers REST
-- ✅ Repositories
-- ✅ Consumers de eventos
-- **Tool:** @SpringBootTest + Testcontainers
-
-### Cobertura Requerida
-- Lógica de negocio: **80%+**
-- Validaciones: **90%+**
-- Controllers: **70%+**
+| Cliente | Cédula | Cuenta | Tipo | Saldo Inicial |
+|---------|--------|--------|------|---------------|
+| **Jose Lema** | 1712345678 | 478758 | Ahorros | 2000.00 |
+| **Marianela Montalvo** | 1722345678 | 225487 | Corriente | 100.00 |
+| **Juan Osorio** | 1732345678 | 495878 | Ahorros | 0.00 |
+| **Marianela Montalvo** | 1722345678 | 496825 | Ahorros | 540.00 |
+| **Jose Lema** | 1712345678 | 585545 | Corriente | 1000.00 |
 
 ---
 
-## 🐛 Debugging y Monitoreo
+## 🛠️ 7. Guía de Operación y Soporte
 
-### Logs en Tiempo Real
-```bash
-docker-compose logs -f            # Todos
-docker-compose logs -f ms-postgres  # Solo PostgreSQL
-docker-compose logs -f ms-rabbitmq  # Solo RabbitMQ
-```
+### Acceder a los Microservicios (REST)
+*   **Clientes**: `http://localhost:8001/api/clientes`
+*   **Cuentas**: `http://localhost:8002/cuentas`
+*   **Movimientos**: `http://localhost:8002/movimientos`
+*   **Reportes**: `http://localhost:8002/reportes?fecha=2022-01-01,2022-12-31&cliente=1`
 
-### Ejecutar y Depurar (Run & Debug)
-Para desarrollar el microservicio `ms-clientes`:
+### Administración de Infraestructura
+*   **RabbitMQ Management**: `http://localhost:15672` (guest / guest).
+*   **Base de Datos CLI**: 
+    ```bash
+    docker-compose exec postgres psql -U postgres -d db_cuentas
+    ```
 
-1.  **Levantar Infra:** `docker-compose up -d`
-2.  **IDE (Recomendado):**
-    *   Abrir la carpeta raíz en VS Code o IntelliJ.
-    *   Localizar la clase `MsClientesApplication.java`.
-    *   Ejecutar en modo **Debug** (F5 en VS Code).
-3.  **Terminal:**
-    *   Build: `mvn clean package`
-    *   Run: `java -jar target/ms-clientes-0.0.1-SNAPSHOT.jar`
-
-Para más detalles, consulta el [README de ms-clientes](./ms-clientes/README.md).
-
-### Acceder a Bases de Datos
-```bash
-# PostgreSQL CLI
-docker-compose exec ms-postgres psql -U postgres -d db_clientes
-
-# Ver tablas
-\dt
-\l   # listar bases de datos
-```
-
-### RabbitMQ Management
-```
-URL: http://localhost:15672
-Usuario: guest
-Contraseña: guest
-```
+### Troubleshooting Rápido
+*   **Error 409 Conflict**: Identificación duplicada en clientes.
+*   **Error 400 "Saldo no disponible"**: Retiro excede el saldo actual (Validación F3).
+*   **Logs**: `docker-compose logs -f [servicio]`
 
 ---
-
-## ✅ Checklist Antes de Empezar
-
-- [ ] Docker y Docker Compose instalados
-- [ ] Java 17+ instalado
-- [ ] Maven o Gradle instalado
-- [ ] `docker-compose up -d` ejecutado exitosamente
-- [ ] `docker-compose ps` muestra todos los servicios UP
-- [ ] PostgreSQL accesible en puerto 5432
-- [ ] RabbitMQ Management accesible en http://localhost:15672
-- [ ] `.env.example` copiado a `.env` (opcional para desarrollo)
-
----
-
-## 📚 Documentación del Proyecto
-
-- **Scripts:** [scripts/README.md](scripts/README.md)
-- **Docker:** `docker-compose.yml`
-- **Configuración:** `.env.example`
-
----
-
-## 🤝 Contribuir
-
-Al añadir nuevas características:
-
-1. ✅ Sigue Clean Architecture (Hexagonal)
-2. ✅ Escribe tests (80%+ cobertura)
-3. ✅ Mantén el código limpio y documentado
-4. ✅ Usa commit messages descriptivos
-5. ✅ Respeta las reglas de negocio (BigDecimal para dinero, validaciones, etc.)
-
----
-
-## 📞 Troubleshooting Rápido
-
-| Problema | Solución |
-|----------|----------|
-| Port 5432 en uso | `lsof -i :5432` → `kill -9 <PID>` |
-| Port 5672 en uso | `lsof -i :5672` → `kill -9 <PID>` |
-| Docker no inicia | Reiniciar Docker Desktop |
-| Datos corruptos | `docker-compose down -v` |
-| No ve cambios | Reconstruir: `docker-compose up -d --build` |
-
----
-
-## 🎓 Referencias Externas
-
-- 📖 [Spring Boot Docs](https://spring.io/projects/spring-boot)
-- 🐘 [PostgreSQL Docs](https://www.postgresql.org/docs/)
-- 🐰 [RabbitMQ Docs](https://www.rabbitmq.com/documentation.html)
-- 🏗️ [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- 🧪 [JUnit 5 Guide](https://junit.org/junit5/docs/current/user-guide/)
-
----
-
-**Última actualización:** 2026-03-15  
-**Versión:** 1.0.0
+**Última Actualización:** 2026-03-17  
+**Estado:** Requerimientos F1 a F7 Completados ✅
