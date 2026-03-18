@@ -1,11 +1,11 @@
-package com.devsu.clientes.infrastructure.rest.controller;
+package com.devsu.clientes.infrastructure.adapters.in.web.controller;
 
 import com.devsu.clientes.application.service.ClienteUseCase;
 import com.devsu.clientes.domain.entity.Cliente;
-import com.devsu.clientes.infrastructure.rest.dto.ClienteRequest;
-import com.devsu.clientes.infrastructure.rest.dto.ClienteResponse;
-import com.devsu.clientes.infrastructure.rest.dto.ClienteUpdateRequest;
-import com.devsu.clientes.infrastructure.rest.dto.ChangePasswordRequest;
+import com.devsu.clientes.infrastructure.adapters.in.web.dto.ChangePasswordRequest;
+import com.devsu.clientes.infrastructure.adapters.in.web.dto.ClienteRequest;
+import com.devsu.clientes.infrastructure.adapters.in.web.dto.ClienteResponse;
+import com.devsu.clientes.infrastructure.adapters.in.web.dto.ClienteUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

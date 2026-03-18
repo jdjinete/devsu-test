@@ -1,6 +1,6 @@
 package com.devsu.clientes;
 
-import com.devsu.clientes.infrastructure.rest.dto.ClienteRequest;
+import com.devsu.clientes.infrastructure.adapters.in.web.dto.ClienteRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
-import com.devsu.clientes.infrastructure.adapter.RabbitMQClienteEventPublisher;
+import com.devsu.clientes.infrastructure.adapters.out.event.RabbitMQClienteEventPublisher;
 
 /**
  * Prueba de Integración (F6): Flujo completo de creación de Cliente.

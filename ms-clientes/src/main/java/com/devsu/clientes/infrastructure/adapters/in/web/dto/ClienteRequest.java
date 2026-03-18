@@ -1,4 +1,4 @@
-package com.devsu.clientes.infrastructure.rest.dto;
+package com.devsu.clientes.infrastructure.adapters.in.web.dto;
 
 import lombok.Data;
 import jakarta.validation.constraints.*;

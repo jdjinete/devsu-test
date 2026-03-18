@@ -1,4 +1,4 @@
-package com.devsu.clientes.infrastructure.rest.dto;
+package com.devsu.clientes.infrastructure.adapters.in.web.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
