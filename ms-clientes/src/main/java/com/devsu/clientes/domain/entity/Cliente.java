@@ -255,6 +255,10 @@ public class Cliente extends Persona {
         this.clienteId = clienteId;
     }
 
+    public void setEstadoCliente(String estadoCliente) {
+        this.estadoCliente = estadoCliente;
+    }
+
     // =====================================================================
     // Métodos equals y hashCode (Basados en Cliente ID)
     // =====================================================================
