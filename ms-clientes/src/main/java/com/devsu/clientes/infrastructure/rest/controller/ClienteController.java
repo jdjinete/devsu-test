@@ -5,6 +5,7 @@ import com.devsu.clientes.domain.entity.Cliente;
 import com.devsu.clientes.infrastructure.rest.dto.ClienteRequest;
 import com.devsu.clientes.infrastructure.rest.dto.ClienteResponse;
 import com.devsu.clientes.infrastructure.rest.dto.ClienteUpdateRequest;
+import com.devsu.clientes.infrastructure.rest.dto.ChangePasswordRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,8 +75,8 @@ public class ClienteController {
     @PatchMapping("/{id}/contrasena")
     public ResponseEntity<Void> cambiarContrasena(
             @PathVariable Long id,
-            @RequestParam String nuevaContrasena) {
-        clienteUseCase.cambiarContrasena(id, nuevaContrasena);
+            @Valid @RequestBody ChangePasswordRequest request) {
+        clienteUseCase.cambiarContrasena(id, request.getNuevaContrasena());
         return ResponseEntity.ok().build();
     }
 
