@@ -460,5 +460,19 @@ Contraseña: guest
 - 🧪 [JUnit 5 Guide](https://junit.org/junit5/docs/current/user-guide/)
 
 ---
-**Última Actualización:** 2026-03-17  
-**Estado:** Requerimientos F1 a F7 Completados ✅
+
+## 🔭 8. Observabilidad Avanzada (Trazabilidad y Métricas)
+
+El ecosistema cuenta con un stack de observabilidad completo (Micrometer Tracing, Zipkin, Prometheus y Grafana) implementado para producción:
+
+### Trazabilidad Distribuida (Zipkin)
+- Cada petición (HTTP o AMQP) generará automáticamente un `traceId` y `spanId`.
+- La inyección de metadatos cruza la barrera asincrónica de **RabbitMQ** permitiendo ver gráficamente en Zipkin todo el flujo transaccional.
+- **Acceso:** `http://localhost:9411`
+
+### Métricas y Monitorización (Prometheus & Grafana)
+- Las métricas internas de la JVM (Heap, Open Files, CPU) de cada microservicio se recolectan automáticamente a través de los endpoints `/actuator/prometheus`.
+- **Grafana (Dashboards):** `http://localhost:3000` (admin/admin).
+- **Auto-Provisioning:** El sistema inicializa automáticamente el *Data Source* de Prometheus y provee un Dashboard por defecto (Spring Boot 3 Statistics) listo para usar sin configuración manual.
+
+---
