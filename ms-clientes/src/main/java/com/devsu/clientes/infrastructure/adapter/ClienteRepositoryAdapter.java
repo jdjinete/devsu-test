@@ -132,6 +132,7 @@ public class ClienteRepositoryAdapter implements ClienteRepositoryPort {
                 entity.getContrasena()
         );
         domain.setClienteId(entity.getClienteId());
+        domain.setPersonaId(entity.getPersonaId());
         return domain;
     }
 }

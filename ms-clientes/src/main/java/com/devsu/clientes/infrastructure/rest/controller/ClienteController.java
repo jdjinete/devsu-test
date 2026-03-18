@@ -4,6 +4,7 @@ import com.devsu.clientes.application.service.ClienteUseCase;
 import com.devsu.clientes.domain.entity.Cliente;
 import com.devsu.clientes.infrastructure.rest.dto.ClienteRequest;
 import com.devsu.clientes.infrastructure.rest.dto.ClienteResponse;
+import com.devsu.clientes.infrastructure.rest.dto.ClienteUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -52,10 +53,11 @@ public class ClienteController {
     @PutMapping("/{id}")
     public ResponseEntity<ClienteResponse> actualizarCliente(
             @PathVariable Long id,
-            @Valid @RequestBody ClienteRequest request) {
+            @Valid @RequestBody ClienteUpdateRequest request) {
         Cliente cliente = clienteUseCase.actualizarCliente(
                 id,
                 request.getNombre(),
+                request.getGenero(),
                 request.getEdad(),
                 request.getDireccion(),
                 request.getTelefono()

@@ -111,7 +111,7 @@ public interface ClienteUseCase {
      * @throws com.devsu.clientes.domain.exception.ClienteNoEncontradoException si cliente no existe
      * @throws IllegalArgumentException si nuevos datos son inválidos
      */
-    Cliente actualizarCliente(Long clienteId, String nombre, Integer edad,
+    Cliente actualizarCliente(Long clienteId, String nombre, String genero, Integer edad,
                              String direccion, String telefono);
 
     /**

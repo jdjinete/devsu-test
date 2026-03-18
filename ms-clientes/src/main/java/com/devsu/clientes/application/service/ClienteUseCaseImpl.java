@@ -174,15 +174,21 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
      * @throws IllegalArgumentException si nuevos datos son inválidos
      */
     @Override
-    public Cliente actualizarCliente(Long clienteId, String nombre, Integer edad,
+    public Cliente actualizarCliente(Long clienteId, String nombre, String genero, Integer edad,
                                     String direccion, String telefono) {
 
         // Obtener cliente existente
         Cliente cliente = clienteRepositoryPort.obtenerPorId(clienteId)
                 .orElseThrow(() -> new ClienteNoEncontradoException(clienteId));
 
-        // Actualizar campos si se proporcionan
-        cliente.actualizar(nombre, cliente.getGenero(), edad, direccion, telefono);
+        // Actualizar campos si se proporcionan (si son null, mantener actuales)
+        String newNombre = (nombre != null) ? nombre : cliente.getNombre();
+        String newGenero = (genero != null) ? genero : cliente.getGenero();
+        Integer newEdad = (edad != null) ? edad : cliente.getEdad();
+        String newDireccion = (direccion != null) ? direccion : cliente.getDireccion();
+        String newTelefono = (telefono != null) ? telefono : cliente.getTelefono();
+
+        cliente.actualizar(newNombre, newGenero, newEdad, newDireccion, newTelefono);
 
         // Persistir cambios
         clienteRepositoryPort.actualizar(cliente);
