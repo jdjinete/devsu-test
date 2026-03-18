@@ -9,10 +9,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Implementación del caso de uso para Movimientos.
  * Orquesta la lógica de negocio requerida en F2 y F3.
  */
+@Transactional
 public class MovimientoService implements MovimientoUseCase {
 
     private final MovimientoRepositoryPort movimientoRepository;
@@ -67,5 +70,42 @@ public class MovimientoService implements MovimientoUseCase {
     @Override
     public List<Movimiento> obtenerMovimientosPorCuenta(String numeroCuenta) {
         return movimientoRepository.findByCuentaNumeroCuenta(numeroCuenta);
+    }
+
+    @Override
+    public Movimiento actualizarMovimiento(Movimiento movimiento) {
+        // 1. Verificar que el movimiento existe
+        Movimiento existingMovimiento = movimientoRepository.findById(movimiento.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Movimiento no encontrado: " + movimiento.getId()));
+
+        // 2. Obtener la cuenta asociada
+        String numeroCuenta = movimiento.getCuenta().getNumeroCuenta();
+        Cuenta cuenta = cuentaRepository.findByNumeroCuenta(numeroCuenta)
+                .orElseThrow(() -> new IllegalArgumentException("Cuenta no encontrada: " + numeroCuenta));
+
+        // 3. REVERTIR el efecto del movimiento anterior en el saldo de la cuenta
+        BigDecimal oldValor = existingMovimiento.getValor();
+        // Si era un retiro (-100), para revertirlo sumamos 100. saldo = saldo - (-100) = saldo + 100
+        // Si era un deposito (100), para revertirlo restamos 100. saldo = saldo - (100)
+        cuenta.setSaldoActual(cuenta.getSaldoActual().subtract(oldValor));
+
+        // 4. APLICAR el nuevo movimiento
+        BigDecimal newValor = movimiento.getValor();
+        if (newValor.compareTo(BigDecimal.ZERO) < 0) {
+            cuenta.retirar(newValor); // Valida saldo insuficiente (F3)
+            existingMovimiento.setTipoMovimiento("Retiro");
+        } else {
+            cuenta.depositar(newValor);
+            existingMovimiento.setTipoMovimiento("Deposito");
+        }
+
+        // 5. Actualizar los datos del movimiento y la cuenta
+        existingMovimiento.setValor(newValor);
+        existingMovimiento.setSaldo(cuenta.getSaldoActual());
+        existingMovimiento.setCuenta(cuenta);
+
+        // 6. Persistir cambios en cadena
+        cuentaRepository.save(cuenta);
+        return movimientoRepository.save(existingMovimiento);
     }
 }

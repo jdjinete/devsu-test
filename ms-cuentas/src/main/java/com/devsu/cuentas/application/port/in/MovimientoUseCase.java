@@ -9,4 +9,5 @@ public interface MovimientoUseCase {
     Optional<Movimiento> obtenerMovimientoPorId(Long id);
     List<Movimiento> obtenerTodos();
     List<Movimiento> obtenerMovimientosPorCuenta(String numeroCuenta);
+    Movimiento actualizarMovimiento(Movimiento movimiento);
 }

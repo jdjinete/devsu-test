@@ -41,4 +41,12 @@ public class MovimientoController {
                 .map(movimientoMapper::toResponse)
                 .collect(Collectors.toList());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovimientoResponse> actualizar(@PathVariable Long id, @RequestBody MovimientoRequest request) {
+        Movimiento movimiento = movimientoMapper.toDomain(request);
+        movimiento.setId(id);
+        Movimiento movimientoActualizado = movimientoUseCase.actualizarMovimiento(movimiento);
+        return ResponseEntity.ok(movimientoMapper.toResponse(movimientoActualizado));
+    }
 }
