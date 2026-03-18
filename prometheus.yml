@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 10s
+
+scrape_configs:
+  - job_name: 'ms-clientes'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-clientes:8080']
+
+  - job_name: 'ms-cuentas'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['ms-cuentas:8080']

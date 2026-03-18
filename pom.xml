@@ -22,6 +22,32 @@
     <modules>
 		<module>ms-clientes</module>
 		<module>ms-cuentas</module>
-		</modules>
+	</modules>
+
+	<dependencies>
+		<!-- 1. Actuator (Para exponer los endpoints de métricas y health) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<!-- 2. Prometheus Registry (Para formatear las métricas de Actuator hacia Prometheus) -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+		</dependency>
+
+		<!-- 3. Micrometer Tracing (Reemplazo de Spring Cloud Sleuth en Spring Boot 3) -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing-bridge-brave</artifactId>
+		</dependency>
+
+		<!-- 4. Zipkin Reporter (Para enviar enviando las trazas al servidor Zipkin/Jaeger con el bridge Brave) -->
+		<dependency>
+			<groupId>io.zipkin.reporter2</groupId>
+			<artifactId>zipkin-reporter-brave</artifactId>
+		</dependency>
+	</dependencies>
 
 </project>
