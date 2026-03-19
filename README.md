@@ -10,7 +10,7 @@ Para levantar el entorno completo (Infraestructura + Microservicios) de forma au
 
 ```bash
 # 1. Clonar y entrar al proyecto
-git clone <url>
+git clone https://github.com/jdjinete/devsu-test.git
 cd devsu-test
 
 # 2. Levantar todo el stack con Docker (Construye imágenes y arranca servicios)
