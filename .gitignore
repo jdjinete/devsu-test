@@ -185,7 +185,7 @@ logs/*
 *.log
 *.logs
 nohup.out
-out/
+/out/
 *.stack
 crash.dump
 
