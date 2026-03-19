@@ -13,15 +13,31 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/cuentas")
 @RequiredArgsConstructor
+@Tag(name = "Cuentas", description = "Operaciones de creación, consulta y gestión de cuentas bacarias")
 public class CuentaController {
 
     private final CuentaUseCase cuentaUseCase;
     private final CuentaMapper cuentaMapper;
 
     @PostMapping
+    @Operation(summary = "Crear una nueva cuenta", description = "Registra una nueva cuenta a nombre de un cliente existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cuenta creada exitosamente",
+                    content = { @Content(mediaType = "application/json", 
+                    schema = @Schema(implementation = CuentaResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "La solicitud tiene datos inválidos o incompletos", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    })
     public ResponseEntity<CuentaResponse> crear(@RequestBody CuentaRequest request) {
         Cuenta cuenta = cuentaMapper.toDomain(request);
         Cuenta cuentaCreada = cuentaUseCase.crearCuenta(cuenta);

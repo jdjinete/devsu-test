@@ -21,6 +21,32 @@ docker-compose ps
 
 # 4. Acceder a RabbitMQ Management
 # http://localhost:15672  (guest / guest)
+
+# 5. Acceder a Grafana (Dashboards)
+# http://localhost:3000 (admin / admin)
+
+# Dashboards grafana:
+# http://localhost:3000/d/spring_boot_21/spring-boot-3-x-statistics?orgId=1&from=now-1h&to=now&timezone=browser&var-application=&var-Namespace=&var-instance=ms-clientes:8080&var-hikaricp=HikariPool-1&var-memory_pool_heap=$__all&var-memory_pool_nonheap=$__all
+
+# 6. Acceder a Prometheus (Metrics)
+# http://localhost:9090 (admin / admin)
+
+# 7. Acceder a Swagger (Documentation)
+# http://localhost:8001/swagger-ui.html
+# http://localhost:8002/swagger-ui.html
+
+# 8. Acceder a ms-clientes
+# http://localhost:8001/api/clientes
+# http://localhost:8001/api/clientes/{id}
+
+# 9. Acceder a ms-cuentas
+# http://localhost:8002/movimientos
+# http://localhost:8002/reportes
+
+# 10. Base de datos postgresql
+# http://localhost:5433 (postgres/postgres) db_clientes y db_cuentas
+
+### Para lanzar las pruebas de postmant puedes usar el archivo collection.json que se encuentra en la carpeta endpoints-para-pruebas-postman
 ```
 ### 💡 Importante: Datos de Prueba
 El sistema se inicializa automáticamente con:

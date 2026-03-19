@@ -15,14 +15,30 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
 @RequestMapping("/api/clientes")
 @RequiredArgsConstructor
+@Tag(name = "Clientes", description = "Operaciones de registro, consulta y mantenimiento de clientes")
 public class ClienteController {
 
     private final ClienteUseCase clienteUseCase;
 
     @PostMapping
+    @Operation(summary = "Crear un nuevo cliente", description = "Registra un nuevo cliente en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cliente creado exitosamente",
+                    content = { @Content(mediaType = "application/json", 
+                    schema = @Schema(implementation = ClienteResponse.class)) }),
+            @ApiResponse(responseCode = "400", description = "La solicitud tiene datos inválidos o incompletos", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor", content = @Content)
+    })
     public ResponseEntity<ClienteResponse> crearCliente(@Valid @RequestBody ClienteRequest request) {
         Cliente cliente = clienteUseCase.crearCliente(
                 request.getNombre(),
